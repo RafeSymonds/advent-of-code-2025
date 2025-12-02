@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+    cat <<'USAGE'
+Usage: bin/new-day.sh <day-number>
+
+Creates the scaffolding for a new Advent of Code day:
+  - lib/days/dayXX/main.ml
+  - lib/days/dayXX/input.txt
+  - bin/dayXX/dayXX.ml
+  - bin/dayXX/dune
+
+The day number should be between 1 and 25; it will be zero-padded.
+USAGE
+}
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+    usage
+    exit 0
+fi
+
+if [ "$#" -ne 1 ]; then
+    usage >&2
+    exit 1
+fi
+
+if ! [[ "$1" =~ ^[0-9]+$ ]]; then
+    echo "Day must be a number (1-25)." >&2
+    exit 1
+fi
+
+day_number="$1"
+if [ "$day_number" -lt 1 ] || [ "$day_number" -gt 25 ]; then
+    echo "Day must be between 1 and 25." >&2
+    exit 1
+fi
+
+printf -v day_slug "day%02d" "$day_number"
+printf -v day_module "Day%02d" "$day_number"
+
+lib_dir="lib/days/$day_slug"
+bin_dir="bin/$day_slug"
+
+if [ -e "$lib_dir" ] || [ -e "$bin_dir" ]; then
+    echo "Refusing to overwrite existing directories for $day_slug." >&2
+    exit 1
+fi
+
+mkdir -p "$lib_dir" "$bin_dir"
+
+cat >"$lib_dir/main.ml" <<EOF
+let read_input () =
+  let rec loop acc =
+    try loop (read_line () :: acc) with End_of_file -> List.rev acc
+  in
+  loop []
+
+let run () =
+  let _input = read_input () in
+  Printf.printf "TODO: implement $day_module\n"
+EOF
+
+: >"$lib_dir/input.txt"
+
+cat >"$bin_dir/$day_slug.ml" <<EOF
+let () = Aoc_lib.Days.$day_module.Main.run ()
+EOF
+
+cat >"$bin_dir/dune" <<EOF
+(executable
+ (name $day_slug)
+ (public_name $day_slug)
+ (libraries aoc_lib))
+EOF
+
+echo "Created scaffolding for $day_slug."
