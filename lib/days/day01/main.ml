@@ -32,11 +32,12 @@ let run () =
         (String.sub s 0 1, String.sub s 1 (String.length s - 1) |> int_of_string))
     |> List.fold_left
          (fun (current, cnt) (dir, value) ->
+           let step = if dir = "L" then -1 else 1 in
+
            let rec calc current cnt value =
              if value = 0 then (current, cnt)
              else
-               let current = current + if dir = "L" then -1 else 1 in
-               let current = current mod 100 in
+               let current = (current + step) mod 100 in
 
                let cnt = if current = 0 then cnt + 1 else cnt in
 
