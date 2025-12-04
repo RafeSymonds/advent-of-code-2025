@@ -29,15 +29,16 @@ let rec dfs map stack count =
   | [] -> count
   | (r, c) :: rest ->
       let new_stack, newly_removed =
-        List.fold_left
-          (fun (stk_acc, cnt_acc) (dr, dc) ->
-            let nr = r + dr in
-            let nc = c + dc in
-            if is_full map nr nc && count_neighbors map nr nc < 4 then (
-              map.(nr).(nc) <- 'x';
-              ((nr, nc) :: stk_acc, cnt_acc + 1))
-            else (stk_acc, cnt_acc))
-          (rest, 0) directions
+        directions
+        |> List.fold_left
+             (fun (stk_acc, cnt_acc) (dr, dc) ->
+               let nr = r + dr in
+               let nc = c + dc in
+               if is_full map nr nc && count_neighbors map nr nc < 4 then (
+                 map.(nr).(nc) <- 'x';
+                 ((nr, nc) :: stk_acc, cnt_acc + 1))
+               else (stk_acc, cnt_acc))
+             (rest, 0)
       in
       dfs map new_stack (count + newly_removed)
 
