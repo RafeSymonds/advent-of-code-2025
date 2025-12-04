@@ -61,6 +61,6 @@ let solve map =
   dfs map initial_stack initial_count
 
 let run () =
-  let map = read_input () |> List.map string_to_char_array |> Array.of_list in
-  let result = solve map in
-  Printf.printf "%d\n" result
+  read_input ()
+  |> List.map string_to_char_array
+  |> Array.of_list |> solve |> Printf.printf "%d\n"
