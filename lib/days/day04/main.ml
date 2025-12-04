@@ -43,18 +43,19 @@ let rec dfs map stack count =
 
 let solve map =
   let initial_count, initial_stack =
-    Array.fold_left
-      (fun (count, stack) (r, row) ->
-        Array.fold_left
-          (fun (count, stack) (c, cell) ->
-            if cell = '@' && count_neighbors map r c < 4 then (
-              map.(r).(c) <- 'x';
-              (count + 1, (r, c) :: stack))
-            else (count, stack))
-          (count, stack)
-          (Array.mapi (fun c cell -> (c, cell)) row))
-      (0, [])
-      (Array.mapi (fun r row -> (r, row)) map)
+    map
+    |> Array.mapi (fun r row -> (r, row))
+    |> Array.fold_left
+         (fun (count, stack) (r, row) ->
+           Array.mapi (fun c cell -> (c, cell)) row
+           |> Array.fold_left
+                (fun (count, stack) (c, cell) ->
+                  if cell = '@' && count_neighbors map r c < 4 then (
+                    map.(r).(c) <- 'x';
+                    (count + 1, (r, c) :: stack))
+                  else (count, stack))
+                (count, stack))
+         (0, [])
   in
 
   dfs map initial_stack initial_count
