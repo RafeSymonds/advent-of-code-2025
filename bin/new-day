@@ -63,6 +63,7 @@ let run () =
 EOF
 
 : >"$lib_dir/input.txt"
+: >"$lib_dir/sample_input.txt"
 
 cat >"$bin_dir/$day_slug.ml" <<EOF
 let () = Aoc_lib.Days.$day_module.Main.run ()
