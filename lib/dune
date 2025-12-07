@@ -1,5 +1,6 @@
 (include_subdirs qualified)
 
 (library
- (name aoc_lib))
+ (name aoc_lib)
+ (libraries str))
 
